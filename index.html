@@ -33,8 +33,212 @@
     <meta property="og:title" content="Papercrafta">
     <meta property="og:description" content="">
     <meta property="og:type" content="website">
-  <meta name="referrer" content="origin"><meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
-  <body data-home-page="Papercrafta.html" data-home-page-title="Papercrafta" data-path-to-root="./" data-include-products="false" class="u-body u-clearfix u-xxl-mode" data-lang="ru" style="background-position: 50% 50%; background-image: url(&quot;images/PapercraftaBG.png&quot;);"><header class="u-clearfix u-header u-image u-shading u-sticky u-sticky-5fe0 u-header" id="header" data-image-width="1920" data-image-height="1080"><div class="u-clearfix u-sheet u-valign-middle-md u-valign-top-xxl u-sheet-1">
+  <meta name="referrer" content="origin"><script>
+    window.recaptchaRenderedV2 = false;
+    window.recaptchaFallback = false;
+    window.recaptchaSiteKeyV2 = '6LdfeIwrAAAAAMnDkaIExdHsV0Nsj8y-CU9AyTjZ';
+
+    function gdprConfirmed() {
+        return true;
+    }
+
+    function dynamicLoadScript() {
+        var script = document.createElement('script');
+        script.src = 'https://www.google.com/recaptcha/api.js?render=6LfCAAwsAAAAAKrUjvTvfF2L2rbX43AP2qnZ3hOs';
+        script.async = true;
+        script.onload = function () {
+            var event = new CustomEvent("recaptchaLoaded");
+            document.dispatchEvent(event);
+        };
+        document.body.appendChild(script);
+    }
+
+    function showRecaptchaError(error) {
+        error = error || '';
+        var formError = document.querySelector('.u-form-send-error');
+
+        if (formError) {
+            formError.innerText = 'Неверный владелец сайта: ' + error.replace(/:[\s\S]*/, '');
+            formError.style.display = 'block';
+        }
+
+        console.error('Error in grecaptcha: ', error);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var confirmButtons = document.querySelectorAll('.u-cookies-consent .u-button-confirm');
+        confirmButtons.forEach(function (button) {
+            button.onclick = dynamicLoadScript;
+        });
+    });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            if (!gdprConfirmed()) {
+                return;
+            }
+            dynamicLoadScript();
+        });
+    </script>
+
+    <script>
+        document.addEventListener("recaptchaLoaded", function() {
+            if (!gdprConfirmed()) {
+                return;
+            }
+
+            (function (grecaptcha, sitekey, actions) {
+                var recaptcha = {
+                    execute: function (action, submitFormCb) {
+                        if (typeof grecaptcha === 'undefined' || typeof grecaptcha.execute !== 'function') {
+                            showRecaptchaError('reCAPTCHA script failed to load.');
+                            return;
+                        }
+
+                        try {
+                            grecaptcha.execute(sitekey, {action: action}).then((token) => {
+                                if (!token) {
+                                    throw new Error('Empty token received from reCAPTCHA');
+                                }
+
+                                var forms = document.getElementsByTagName('form');
+
+                                for (var i = 0; i < forms.length; i++) {
+                                    var response = forms[i].querySelector('[name="recaptchaResponse"]');
+
+                                    if (!response) {
+                                        response = document.createElement('input');
+                                        response.setAttribute('type', 'hidden');
+                                        response.setAttribute('name', 'recaptchaResponse');
+                                        forms[i].appendChild(response);
+                                    }
+
+                                    response.value = token;
+                                }
+
+                                submitFormCb();
+                            }).catch((e) => {
+                                showRecaptchaError(e.message);
+                            });
+                        } catch (e) {
+                            showRecaptchaError(e.message);
+                        }
+                    },
+
+                    executeContact: function (submitFormCb) {
+                        recaptcha.execute(actions['contact'], submitFormCb);
+                    }
+                };
+
+                window.recaptchaObject = recaptcha;
+                window.grecaptchaObject = grecaptcha;
+            })(
+                grecaptcha,
+                
+                '6LfCAAwsAAAAAKrUjvTvfF2L2rbX43AP2qnZ3hOs',
+                {'contact': 'contact'}
+            );
+        });
+    </script>
+
+    <script>
+    window.showRecaptchaV2 = function (form) {
+        if (!form || !form.length) {
+            return;
+        }
+        if (typeof window.grecaptchaObject === 'undefined' || !window.grecaptchaObject) {
+            return;
+        }
+
+        const formEl = form[0];
+
+        let container = document.getElementById('recaptcha-v2-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'recaptcha-v2-container';
+            formEl.parentElement.appendChild(container);
+        }
+
+        let tokenReceived = false;
+        let timeoutHandle;
+
+        if (window.recaptchaRenderedV2 === false || typeof window.recaptchaRenderedV2 === 'undefined') {
+            window.recaptchaRenderedV2 = window.grecaptchaObject.render('recaptcha-v2-container', {
+                'sitekey': window.recaptchaSiteKeyV2,
+                'size': 'invisible',
+                'callback': function (token) {
+                    clearTimeout(timeoutHandle);
+
+                    if (!token) {
+                        showRecaptchaError('reCAPTCHA v2 token was empty. Please try again.');
+                        return;
+                    }
+
+                    tokenReceived = true;
+
+                    let recaptchaResponseV2 = formEl.querySelector('input[name="recaptchaResponseV2"]');
+
+                    if (!recaptchaResponseV2) {
+                        recaptchaResponseV2 = document.createElement('input');
+                        recaptchaResponseV2.type = 'hidden';
+                        recaptchaResponseV2.name = 'recaptchaResponseV2';
+                        formEl.appendChild(recaptchaResponseV2);
+                    }
+
+                    recaptchaResponseV2.value = token;
+
+                    if (window.recaptchaSiteKeyV2) {
+                        let siteKeyInput = formEl.querySelector('input[name="siteKey"]');
+
+                        if (siteKeyInput) {
+                            siteKeyInput.value = window.recaptchaSiteKeyV2;
+                        }
+                    }
+
+                    document.querySelectorAll('.u-form-send-error').forEach(el => {
+                        el.style.display = 'none';
+                    });
+
+                    const event = new CustomEvent('submit', {
+                        detail: { recaptchaPassed: true },
+                        bubbles: true,
+                        cancelable: true,
+                    });
+
+                    formEl.dispatchEvent(event);
+                },
+                'error-callback': function () {
+                    clearTimeout(timeoutHandle);
+                    showRecaptchaError('reCAPTCHA v2 error. Please try again.');
+                },
+                'expired-callback': function () {
+                    clearTimeout(timeoutHandle);
+                }
+            });
+
+            window.grecaptchaObject.reset(window.recaptchaRenderedV2);
+
+            setTimeout(() => {
+                window.grecaptchaObject.execute(window.recaptchaRenderedV2);
+            }, 300);
+
+            timeoutHandle = setTimeout(function () {
+                if (!tokenReceived) {
+                    showRecaptchaError('The Contact Form could not be submitted because Google reCAPTCHA v3 detected unusual activity from your connection. Please try again later, or complete the reCAPTCHA v2 challenge if it appears.');
+                }
+            }, 120000);
+        } else {
+            window.grecaptchaObject.reset(window.recaptchaRenderedV2);
+
+            setTimeout(() => {
+                window.grecaptchaObject.execute(window.recaptchaRenderedV2);
+            }, 300);
+        }
+    };
+    </script>
+<meta data-intl-tel-input-cdn-path="intlTelInput/"></head>
+  <body data-home-page="Papercrafta.html" data-home-page-title="Papercrafta" data-path-to-root="./" data-include-products="false" class="u-body u-clearfix u-xxl-mode" data-lang="ru" style="background-position: 50% 50%; background-image: url(&quot;images/PapercraftaBG.png&quot;);"><header class="u-clearfix u-header u-image u-shading u-sticky u-sticky-5fe0 u-header" id="header" data-image-width="1920" data-image-height="1080"><div class="u-clearfix u-sheet u-valign-top-xxl u-sheet-1">
         <a href="./" data-page-id="342608625" class="u-image u-image-round u-logo u-radius u-image-1" data-image-width="150" data-image-height="118">
           <img src="images/Papercrafta1.png" class="u-logo-image u-logo-image-1" title="Главная">
         </a>
@@ -79,23 +283,23 @@
         </nav>
       </div></header>
     <section class="u-clearfix u-image u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-middle-xs u-section-1" id="sec-e6b9" data-image-width="1920" data-image-height="1080">
-      <div class="u-clearfix u-sheet u-valign-middle-md u-valign-middle-sm u-valign-middle-xl u-valign-middle-xs u-sheet-1">
-        <div class="data-layout-selected u-clearfix u-expanded-width-sm u-expanded-width-xs u-gutter-20 u-layout-wrap u-layout-wrap-1">
+      <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-sm u-valign-middle-xl u-valign-middle-xs u-valign-middle-xxl u-sheet-1">
+        <div class="data-layout-selected u-clearfix u-expanded-width-lg u-expanded-width-md u-expanded-width-sm u-expanded-width-xs u-gutter-20 u-layout-wrap u-layout-wrap-1">
           <div class="u-layout">
             <div class="u-layout-row">
-              <div class="u-container-style u-custom-color-1 u-layout-cell u-left-cell u-radius u-shape-round u-size-19-lg u-size-19-xl u-size-19-xxl u-size-60-md u-size-60-sm u-size-60-xs u-layout-cell-1">
-                <div class="u-container-layout u-valign-bottom-sm u-valign-middle-md u-valign-top-xxl u-container-layout-1">
+              <div class="u-container-style u-custom-color-1 u-layout-cell u-left-cell u-radius u-shape-round u-size-19 u-layout-cell-1">
+                <div class="u-container-layout u-valign-top-lg u-valign-top-sm u-valign-top-xl u-valign-top-xxl u-container-layout-1">
                   <h1 class="u-align-left u-text u-text-1"> Втіль свою мрію у папері!</h1>
-                  <p class="u-align-center-sm u-align-center-xs u-align-left-lg u-align-left-md u-align-left-xl u-align-left-xxl u-text u-text-2"><span style="font-weight: 700;">Papercrafta </span>- це український стартап у сфері творчих хобі, що створює набори для складання об’ємних паперових фігур власноруч.
+                  <p class="u-align-left u-text u-text-2"><span style="font-weight: 700;">Papercrafta </span>- це український стартап у сфері творчих хобі, що створює набори для складання об’ємних паперових фігур власноруч.
                   </p>
                   <p class="u-align-center u-text u-text-3">Насолоджуйся не тільки процесо<span style="font-size: 1.5rem;"></span>м, а й результатом!<br>
                   </p>
                   <a href="./#sec-c414" data-page-id="342608625" class="u-active-black u-align-left u-border-none u-btn u-btn-round u-button-style u-custom-font u-font-lato u-hover-palette-1-light-1 u-palette-1-dark-1 u-radius-10 u-btn-1">До каталогу </a>
                 </div>
               </div>
-              <div class="u-container-style u-custom-color-2 u-layout-cell u-radius u-right-cell u-shape-round u-size-41-lg u-size-41-xl u-size-41-xxl u-size-60-md u-size-60-sm u-size-60-xs u-layout-cell-2">
-                <div class="u-container-layout u-valign-bottom-md u-valign-middle-xl u-valign-middle-xs u-valign-middle-xxl u-container-layout-2">
-                  <img class="u-expanded-width u-image u-image-default u-image-1" src="images/14.jpg" alt="" data-image-width="1667" data-image-height="1267">
+              <div class="u-container-style u-custom-color-2 u-layout-cell u-radius u-right-cell u-shape-round u-size-41 u-layout-cell-2">
+                <div class="u-container-layout u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-middle-xl u-valign-middle-xxl u-container-layout-2">
+                  <img class="custom-expanded u-expanded-width-lg u-expanded-width-xl u-expanded-width-xxl u-image u-image-default u-image-1" src="images/14.jpg" alt="" data-image-width="1667" data-image-height="1267">
                 </div>
               </div>
             </div>
@@ -103,106 +307,109 @@
         </div>
       </div>
     </section>
-    <section class="u-align-left u-clearfix u-image u-section-2" id="sec-1d2a" data-image-width="1920" data-image-height="1080">
-      <div class="u-radius u-shape u-shape-round u-white u-shape-1"></div>
-      <div class="custom-expanded u-align-left u-container-align-left u-container-align-left-xl u-container-align-left-xxl u-container-style u-group u-group-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0" data-animation-out="0">
+    <section class="u-align-left u-clearfix u-image u-valign-middle-xs u-section-2" id="sec-1d2a" data-image-width="1920" data-image-height="1080">
+      <div class="u-container-style u-group u-radius u-white u-group-1">
         <div class="u-container-layout u-container-layout-1">
-          <h2 class="u-align-left u-text u-text-1"> Наша спеціалізація - паперові фігурки високого рівня деталізації</h2>
-          <p class="u-align-left u-text u-text-2"> Ми співпрацюємо з найкращими авторами 3D-моделей - Ваші улюблені персонажі гри або аніме, на яких не намилуватись. Це насправді унікальний товар на українському ринку. Одна така робота при сборці може займати від 20 до 60 годин.</p>
-          <a href="./#sec-7fa0" data-page-id="342608625" class="u-active-palette-1-dark-3 u-align-left u-btn u-button-style u-hover-palette-1-dark-3 u-radius u-btn-1">Хочу почати! </a>
-        </div>
-      </div>
-      <div class="custom-expanded u-carousel u-gallery u-gallery-slider u-layout-carousel u-lightbox u-no-transition u-show-text-on-hover u-gallery-1" id="carousel-a906" data-interval="5000" data-u-ride="carousel">
-        <ol class="u-absolute-hcenter u-carousel-indicators u-carousel-indicators-1">
-          <li data-u-target="#carousel-a906" data-u-slide-to="0" class="u-active u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
-          <li data-u-target="#carousel-a906" data-u-slide-to="1" class="u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
-          <li data-u-target="#carousel-a906" data-u-slide-to="2" class="u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
-          <li data-u-target="#carousel-a906" data-u-slide-to="3" class="u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
-        </ol>
-        <div class="u-carousel-inner u-gallery-inner u-gallery-inner-1" role="listbox">
-          <div class="u-active u-carousel-item u-effect-fade u-gallery-item u-carousel-item-1">
-            <div class="u-back-slide" data-image-width="900" data-image-height="1200">
-              <img class="u-back-image u-expanded" src="images/photo_2023-12-02_21-24-23.jpg">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-1">
-              <h3 class="u-gallery-heading">Sample Title</h3>
-              <p class="u-gallery-text">Sample Text</p>
+          <div class="custom-expanded u-align-left u-container-align-left-lg u-container-align-left-xl u-container-align-left-xxl u-container-style u-group u-group-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0" data-animation-out="0">
+            <div class="u-container-layout u-container-layout-2">
+              <h2 class="u-align-left u-text u-text-1"> Наша спеціалізація - паперові фігурки високого рівня деталізації</h2>
+              <p class="u-align-left u-text u-text-2"> Ми співпрацюємо з найкращими авторами 3D-моделей - Ваші улюблені персонажі гри або аніме, на яких не намилуватись. Це насправді унікальний товар на українському ринку. Одна така робота при сборці може займати від 20 до 60 годин.</p>
+              <a href="./#sec-7fa0" data-page-id="342608625" class="u-active-palette-1-dark-3 u-align-left u-btn u-button-style u-hover-palette-1-dark-3 u-radius u-btn-1">Хочу почати! </a>
             </div>
           </div>
-          <div class="u-carousel-item u-effect-fade u-gallery-item u-carousel-item-2">
-            <div class="u-back-slide" data-image-width="960" data-image-height="1280">
-              <img class="u-back-image u-expanded" src="images/photo_2024-07-28_16-58-06.jpg">
+          <div class="custom-expanded u-carousel u-gallery u-gallery-slider u-layout-carousel u-lightbox u-no-transition u-show-text-on-hover u-gallery-1" id="carousel-6919" data-interval="5000" data-u-ride="carousel">
+            <ol class="u-absolute-hcenter u-carousel-indicators u-carousel-indicators-1">
+              <li data-u-target="#carousel-6919" data-u-slide-to="0" class="u-active u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
+              <li data-u-target="#carousel-6919" data-u-slide-to="1" class="u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
+              <li data-u-target="#carousel-6919" data-u-slide-to="2" class="u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
+              <li data-u-target="#carousel-6919" data-u-slide-to="3" class="u-grey-70 u-shape-circle" style="width: 10px; height: 10px;"></li>
+            </ol>
+            <div class="u-carousel-inner u-gallery-inner u-gallery-inner-1" role="listbox">
+              <div class="u-active u-carousel-item u-effect-fade u-gallery-item u-carousel-item-1">
+                <div class="u-back-slide" data-image-width="900" data-image-height="1200">
+                  <img class="u-back-image u-expanded" src="images/photo_2023-12-02_21-24-23.jpg">
+                </div>
+                <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-1">
+                  <h3 class="u-gallery-heading">Sample Title</h3>
+                  <p class="u-gallery-text">Sample Text</p>
+                </div>
+              </div>
+              <div class="u-carousel-item u-effect-fade u-gallery-item u-carousel-item-2">
+                <div class="u-back-slide" data-image-width="960" data-image-height="1280">
+                  <img class="u-back-image u-expanded" src="images/photo_2024-07-28_16-58-06.jpg">
+                </div>
+                <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-2">
+                  <h3 class="u-gallery-heading">Sample Title</h3>
+                  <p class="u-gallery-text">Sample Text</p>
+                </div>
+              </div>
+              <div class="u-carousel-item u-effect-fade u-gallery-item u-carousel-item-3" data-image-width="709" data-image-height="955">
+                <div class="u-back-slide">
+                  <img class="u-back-image u-expanded" src="images/3.PNG">
+                </div>
+                <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-3"></div>
+                <style data-mode="XXL" data-visited="true"></style>
+                <style data-mode="XL"></style>
+                <style data-mode="LG"></style>
+                <style data-mode="MD"></style>
+                <style data-mode="SM"></style>
+                <style data-mode="XS"></style>
+              </div>
+              <div class="u-carousel-item u-effect-fade u-gallery-item u-carousel-item-4" data-image-width="2222" data-image-height="1667">
+                <div class="u-back-slide">
+                  <img class="u-back-image u-expanded" src="images/IMG_7771.JPG">
+                </div>
+                <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-4"></div>
+                <style data-mode="XXL"></style>
+                <style data-mode="XL"></style>
+                <style data-mode="LG"></style>
+                <style data-mode="MD"></style>
+                <style data-mode="SM"></style>
+                <style data-mode="XS"></style>
+              </div>
             </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-2">
-              <h3 class="u-gallery-heading">Sample Title</h3>
-              <p class="u-gallery-text">Sample Text</p>
-            </div>
-          </div>
-          <div class="u-carousel-item u-effect-fade u-gallery-item u-carousel-item-3" data-image-width="709" data-image-height="955">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/3.PNG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-3"></div>
-            <style data-mode="XXL" data-visited="true"></style>
-            <style data-mode="XL"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS"></style>
-          </div>
-          <div class="u-carousel-item u-effect-fade u-gallery-item u-carousel-item-4" data-image-width="2222" data-image-height="1667">
-            <div class="u-back-slide">
-              <img class="u-back-image u-expanded" src="images/IMG_7771.JPG">
-            </div>
-            <div class="u-align-center u-over-slide u-shading u-valign-bottom u-over-slide-4"></div>
-            <style data-mode="XXL"></style>
-            <style data-mode="XL"></style>
-            <style data-mode="LG"></style>
-            <style data-mode="MD"></style>
-            <style data-mode="SM"></style>
-            <style data-mode="XS"></style>
-          </div>
-        </div>
-        <a class="u-absolute-vcenter u-carousel-control u-carousel-control-prev u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-carousel-control-1" href="#carousel-a906" role="button" data-u-slide="prev"><span aria-hidden="true">
-            <svg viewBox="0 0 451.847 451.847"><path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
+            <a class="u-absolute-vcenter u-carousel-control u-carousel-control-prev u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-carousel-control-1" href="#carousel-6919" role="button" data-u-slide="prev"><span aria-hidden="true">
+                <svg viewBox="0 0 451.847 451.847"><path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
 c12.354,12.354,12.354,32.388,0,44.748L173.525,225.92l171.903,171.909c12.354,12.354,12.354,32.391,0,44.744
 c-12.354,12.365-32.386,12.365-44.745,0l-194.29-194.281C100.226,242.115,97.141,234.018,97.141,225.92z"></path></svg></span><span class="sr-only">
-            <svg viewBox="0 0 451.847 451.847"><path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
+                <svg viewBox="0 0 451.847 451.847"><path d="M97.141,225.92c0-8.095,3.091-16.192,9.259-22.366L300.689,9.27c12.359-12.359,32.397-12.359,44.751,0
 c12.354,12.354,12.354,32.388,0,44.748L173.525,225.92l171.903,171.909c12.354,12.354,12.354,32.391,0,44.744
 c-12.354,12.365-32.386,12.365-44.745,0l-194.29-194.281C100.226,242.115,97.141,234.018,97.141,225.92z"></path></svg></span>
-        </a>
-        <a class="u-absolute-vcenter u-carousel-control u-carousel-control-next u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-carousel-control-2" href="#carousel-a906" role="button" data-u-slide="next"><span aria-hidden="true">
-            <svg viewBox="0 0 451.846 451.847"><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
+            </a>
+            <a class="u-absolute-vcenter u-carousel-control u-carousel-control-next u-grey-70 u-icon-circle u-opacity u-opacity-70 u-spacing-10 u-text-white u-carousel-control-2" href="#carousel-6919" role="button" data-u-slide="next"><span aria-hidden="true">
+                <svg viewBox="0 0 451.846 451.847"><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
 L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284
 c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"></path></svg></span><span class="sr-only">
-            <svg viewBox="0 0 451.846 451.847"><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
+                <svg viewBox="0 0 451.846 451.847"><path d="M345.441,248.292L151.154,442.573c-12.359,12.365-32.397,12.365-44.75,0c-12.354-12.354-12.354-32.391,0-44.744
 L278.318,225.92L106.409,54.017c-12.354-12.359-12.354-32.394,0-44.748c12.354-12.359,32.391-12.359,44.75,0l194.287,194.284
 c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,248.292z"></path></svg></span>
-        </a>
-      </div>
-    </section>
-    <section class="u-align-left u-clearfix u-image u-section-3" id="sec-7fa0" data-image-width="1920" data-image-height="1080">
-      <div class="u-radius u-shape u-shape-round u-text-color-var u-white u-shape-1"></div>
-      <div class="custom-expanded u-align-left u-container-style u-group u-group-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0" data-animation-out="0">
-        <div class="u-container-layout u-valign-bottom u-container-layout-1">
-          <p class="u-align-left u-text u-text-1">Бокс містить​ усе необхідне для того, щоб почати займатися паперкрафтом, а саме:<br>- 2 Надруковані схеми<br>- Макетний ніж<br>- Набір спеціальних пінцетів<br>- Набір клеїв<br>- Килимок для вирізання<br>(QR-код з інструкцією на кришці - просто проскануй використовуючи камеру)<br><span style="font-weight: 700; font-size: 1.875rem;">Вартість боксу - <span class="u-text-palette-3-base">900 грн.</span></span>
-          </p>
-          <p class="u-align-left u-text u-text-2"> Але, за потреби, Ви можете придбати усе необхідне окремо - інструменти та власноруч обрати бажану схему.</p>
-          <a href="./#carousel_7b55" data-page-id="342608625" class="u-active-palette-1-dark-3 u-align-left u-btn u-button-style u-hover-palette-1-dark-3 u-radius u-btn-1">замовити </a>
+            </a>
+          </div>
         </div>
       </div>
-      <h2 class="u-align-left u-text u-text-color-var u-text-3"><span style="--text-color-var: #111111;"><span style="--text-color-var: #000000;">Наш</span></span><span style="--text-color-var: #fbc173;"></span><span style="--text-color-var: #f43535;" class="u-text-custom-color-3">бестселлер</span><span style="--text-color-var: #f6bf16;"></span>- "Starter pack"
+    </section>
+    <section class="u-align-left u-clearfix u-container-align-left-xxl u-image u-section-3" id="sec-7fa0" data-image-width="1920" data-image-height="1080">
+      <div class="u-radius u-shape u-shape-round u-text-color-var u-white u-shape-1"></div>
+      <h2 class="u-align-left u-text u-text-color-var u-text-1"><span style="--text-color-var: #111111;"><span style="--text-color-var: #000000;">Наш</span></span><span style="--text-color-var: #fbc173;"></span><span style="--text-color-var: #f43535;" class="u-text-custom-color-3">бестселлер</span><span style="--text-color-var: #f6bf16;"></span>- "Starter pack"
       </h2>
       <img class="u-image u-image-contain u-image-default u-preserve-proportions u-image-1" src="images/112.jpg" alt="" data-image-width="1541" data-image-height="688" data-animation-name="customAnimationIn" data-animation-duration="1000" data-animation-delay="0" data-animation-out="0">
       <img class="u-image u-image-contain u-image-default u-image-2" src="images/Papercrafta21.png" alt="" data-image-width="1280" data-image-height="1263">
+      <div class="custom-expanded u-align-left u-container-style u-group u-group-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="0" data-animation-out="0">
+        <div class="u-container-layout u-valign-bottom-lg u-valign-bottom-sm u-valign-bottom-xs u-valign-top-md u-valign-top-xxl u-container-layout-1">
+          <p class="u-align-left u-text u-text-2">Бокс містить​ усе необхідне для того, щоб почати займатися паперкрафтом, а саме:<br>- 2 Надруковані схеми<br>- Макетний ніж<br>- Набір спеціальних пінцетів<br>- Набір клеїв<br>- Килимок для вирізання<br>(QR-код з інструкцією на кришці - просто проскануй використовуючи камеру)<br><span style="font-weight: 700; font-size: 1.875rem;">Вартість боксу - <span class="u-text-palette-3-base">900 грн.</span></span>
+          </p>
+          <p class="u-align-left u-text u-text-3"> Але, за потреби, Ви можете придбати усе необхідне окремо - інструменти та власноруч обрати бажану схему.</p>
+          <a href="./#carousel_7b55" data-page-id="342608625" class="u-active-palette-1-dark-3 u-align-left u-btn u-button-style u-hover-palette-1-dark-3 u-radius u-btn-1">замовити </a>
+        </div>
+      </div>
     </section>
-    <section class="u-align-left u-clearfix u-image u-section-4" id="sec-c414" data-image-width="1920" data-image-height="1080">
+    <section class="u-align-left u-clearfix u-container-align-left-xxl u-image u-section-4" id="sec-c414" data-image-width="1920" data-image-height="1080">
       <div class="u-radius u-shape u-shape-round u-text-color-var u-white u-shape-1"></div>
       <h2 class="u-align-center u-text u-text-color-var u-text-1">Каталог товарів</h2>
       <div class="u-list u-list-1">
         <div class="u-repeater u-repeater-1">
-          <div class="u-align-center u-container-style u-custom-item u-list-item u-repeater-item u-shape-rectangle u-white u-list-item-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-out="0">
-            <div class="u-container-layout u-similar-container u-valign-top-lg u-valign-top-md u-valign-top-sm u-valign-top-xl u-valign-top-xs u-container-layout-1">
+          <div class="u-align-center u-container-align-center-lg u-container-align-center-xl u-container-align-center-xxl u-container-style u-custom-item u-list-item u-repeater-item u-shape-rectangle u-white u-list-item-1" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-out="0">
+            <div class="u-container-layout u-similar-container u-valign-top-lg u-valign-top-sm u-valign-top-xl u-container-layout-1">
               <img src="images/Shiranui-ONMYOJI.jpg" alt="" class="u-expanded-width u-image u-image-default u-image-1" data-image-width="1200" data-image-height="1129">
               <h4 class="u-text u-text-2"> Shiranui - ONMY<span style="font-weight: 800;"><span style="font-weight: 800;"></span></span>OJI
               </h4>
@@ -211,8 +418,8 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
               <a href="./#carousel_7b55" data-page-id="342608625" class="u-active-palette-3-base u-align-left u-border-none u-btn u-button-style u-custom-item u-hover-palette-1-dark-3 u-palette-1-light-1 u-radius u-btn-1">замовити </a>
             </div>
           </div>
-          <div class="u-align-center u-container-style u-custom-item u-list-item u-repeater-item u-shape-rectangle u-video-cover u-white u-list-item-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-out="0">
-            <div class="u-container-layout u-similar-container u-valign-top-lg u-valign-top-md u-valign-top-sm u-valign-top-xl u-valign-top-xs u-container-layout-2">
+          <div class="u-align-center u-container-align-center-lg u-container-align-center-md u-container-align-center-sm u-container-align-center-xl u-container-align-center-xxl u-container-style u-custom-item u-list-item u-repeater-item u-shape-rectangle u-video-cover u-white u-list-item-2" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-out="0">
+            <div class="u-container-layout u-similar-container u-valign-top-lg u-valign-top-sm u-valign-top-xl u-container-layout-2">
               <img src="images/Pyra-XENOBLADE.jpg" alt="" class="u-expanded-width u-image u-image-default u-image-2" data-image-width="794" data-image-height="596">
               <h4 class="u-text u-text-5"> Pyra - XENOBLADE</h4>
               <p class="u-text u-text-6">20 сторінок</p>
@@ -220,8 +427,8 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
               <a href="./#carousel_7b55" data-page-id="342608625" class="u-active-palette-3-base u-align-left u-border-none u-btn u-button-style u-custom-item u-hover-palette-1-dark-3 u-palette-1-light-1 u-radius u-btn-2">замовити </a>
             </div>
           </div>
-          <div class="u-align-center u-container-style u-custom-item u-list-item u-repeater-item u-shape-rectangle u-video-cover u-white u-list-item-3" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-out="0">
-            <div class="u-container-layout u-similar-container u-valign-top-lg u-valign-top-md u-valign-top-sm u-valign-top-xl u-valign-top-xs u-container-layout-3">
+          <div class="u-align-center u-container-align-center-lg u-container-align-center-xl u-container-align-center-xxl u-container-style u-custom-item u-list-item u-repeater-item u-shape-rectangle u-video-cover u-white u-list-item-3" data-animation-name="customAnimationIn" data-animation-duration="1500" data-animation-delay="500" data-animation-out="0">
+            <div class="u-container-layout u-similar-container u-valign-top-lg u-valign-top-sm u-valign-top-xl u-container-layout-3">
               <img src="images/photo_2023-12-02_21-24-23.jpg" alt="" class="u-expanded-width u-image u-image-default u-image-3" data-image-width="900" data-image-height="1200">
               <h4 class="u-text u-text-8"> Ayato -&nbsp;<span style="font-size: 1.25rem;">GENSHIN IMPACT</span>
               </h4>
@@ -236,63 +443,16 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
       <a href="#popup-81fd" class="u-active-palette-1-dark-3 u-align-left u-border-none u-btn u-button-style u-dialog-link u-hover-palette-1-dark-3 u-palette-3-base u-radius u-btn-4">Далі -&gt; </a>
     </section>
     <section class="u-clearfix u-image u-section-5" id="carousel_7b55" data-image-width="1920" data-image-height="1080">
-      <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-md u-valign-middle-sm u-valign-middle-xl u-valign-middle-xs u-sheet-1">
-        <div class="data-layout-selected u-clearfix u-expanded-width u-gutter-0 u-layout-wrap u-layout-wrap-1">
+      <div class="u-clearfix u-sheet u-valign-middle-lg u-valign-middle-sm u-valign-middle-xl u-sheet-1">
+        <div class="custom-expanded data-layout-selected u-clearfix u-expanded-width-lg u-expanded-width-md u-expanded-width-sm u-expanded-width-xl u-expanded-width-xxl u-gutter-0 u-layout-wrap u-layout-wrap-1">
           <div class="u-layout">
             <div class="u-layout-row">
-              <div class="u-align-left u-container-style u-layout-cell u-palette-5-dark-3 u-size-30 u-layout-cell-1">
+              <div class="u-align-left u-container-align-left-xl u-container-align-left-xxl u-container-style u-layout-cell u-size-30 u-white u-layout-cell-1">
                 <div class="u-container-layout u-container-layout-1">
-                  <p class="u-text u-text-1"> Хочется мати нове хобі, яке відволікає від рутини, дарує ментальний спокій та гордість за готовий результат виробу? Або ж Ви шукаєте нові ідеї для подарунку дитині, підлітку чи дорослому?&nbsp;<br>Тоді ми знайшли одне одного! &lt;3
-                  </p>
-                  <h2 class="u-text u-text-2">Зв'язок із нами</h2>
-                  <div class="u-expanded-width u-list u-list-1">
-                    <div class="u-repeater u-repeater-1">
-                      <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle">
-                        <div class="u-container-layout u-similar-container u-container-layout-2"><span class="u-file-icon u-icon u-text-white u-icon-1"><img src="images/646094-23388df3.png" alt=""></span>
-                          <h5 class="u-text u-text-3">Напишіть нам! </h5>
-                          <p class="u-text u-text-grey-10 u-text-4">Наша дружня компанія завжди рада Вашим питанням та пропозиціям!<br style="">
-                            <a href="#" class="u-active-none u-border-1 u-border-active-white u-border-hover-white u-border-no-left u-border-no-right u-border-no-top u-border-palette-3-base u-btn u-button-link u-button-style u-hover-none u-none u-text-active-white u-text-hover-white u-text-palette-3-base u-btn-1" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">papercrafta@gmail.com </a>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle">
-                        <div class="u-container-layout u-similar-container u-container-layout-3"><span class="u-file-icon u-icon u-text-white u-icon-2"><img src="images/2838912-49358f0d.png" alt=""></span>
-                          <h5 class="u-text u-text-5">Офіс</h5>
-                          <p class="u-text u-text-grey-10 u-text-6">Вулиця Хрещатик, 27,<br>Київ, Украина, 01001<br style="">
-                          </p>
-                        </div>
-                      </div>
-                      <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle">
-                        <div class="u-container-layout u-similar-container u-container-layout-4"><span class="u-file-icon u-icon u-text-white u-icon-3"><img src="images/8066424-eec24b29.png" alt=""></span>
-                          <h5 class="u-text u-text-7">Телефон</h5>
-                          <p class="u-text u-text-grey-10 u-text-8"> пн-пт з 9:00 до 18:00<br style="">
-                            <a href="#" class="u-active-none u-border-1 u-border-active-white u-border-hover-white u-border-no-left u-border-no-right u-border-no-top u-border-palette-3-base u-btn u-button-link u-button-style u-hover-none u-none u-text-active-white u-text-hover-white u-text-palette-3-base u-btn-2" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">+380 93 1467834<br>
-                            </a>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="u-social-icons u-social-icons-1">
-                    <a class="u-social-url" title="Telegram" target="_blank" href="https://web.telegram.org/a/"><span class="u-file-icon u-icon u-social-facebook u-social-icon u-icon-4"><img src="images/1517979-9abc4c4c.png" alt=""></span>
-                    </a>
-                    <a class="u-social-url" title="instagram" target="_blank" href="https://instagram.com/name"><span class="u-icon u-social-icon u-social-instagram u-text-color-var u-icon-5"><svg class="u-svg-link" preserveAspectRatio="xMidYMin slice" viewBox="0 0 112 112" style=""><use xlink:href="#svg-9d85"></use></svg><svg class="u-svg-content" viewBox="0 0 112 112" x="0" y="0" id="svg-9d85"><path fill="currentColor" d="M55.9,32.9c-12.8,0-23.2,10.4-23.2,23.2s10.4,23.2,23.2,23.2s23.2-10.4,23.2-23.2S68.7,32.9,55.9,32.9z
-	 M55.9,69.4c-7.4,0-13.3-6-13.3-13.3c-0.1-7.4,6-13.3,13.3-13.3s13.3,6,13.3,13.3C69.3,63.5,63.3,69.4,55.9,69.4z"></path><path fill="#FFFFFF" d="M79.7,26.8c-3,0-5.4,2.5-5.4,5.4s2.5,5.4,5.4,5.4c3,0,5.4-2.5,5.4-5.4S82.7,26.8,79.7,26.8z"></path><path fill="currentColor" d="M78.2,11H33.5C21,11,10.8,21.3,10.8,33.7v44.7c0,12.6,10.2,22.8,22.7,22.8h44.7c12.6,0,22.7-10.2,22.7-22.7
-	V33.7C100.8,21.1,90.6,11,78.2,11z M91,78.4c0,7.1-5.8,12.8-12.8,12.8H33.5c-7.1,0-12.8-5.8-12.8-12.8V33.7
-	c0-7.1,5.8-12.8,12.8-12.8h44.7c7.1,0,12.8,5.8,12.8,12.8V78.4z"></path></svg></span>
-                    </a>
-                    <a class="u-social-url" target="_blank" data-type="Custom" title="Pinterest" href="https://www.pinterest.com/"><span class="u-icon u-social-custom u-social-icon u-text-color-var u-icon-6"><svg class="u-svg-link" preserveAspectRatio="xMidYMin slice" viewBox="0 0 511.977 511.977" style=""><use xlink:href="#svg-a3cb"></use></svg><svg class="u-svg-content" viewBox="0 0 511.977 511.977" x="0px" y="0px" id="svg-a3cb" style="enable-background:new 0 0 511.977 511.977;"><g><g><path d="M262.948,0C122.628,0,48.004,89.92,48.004,187.968c0,45.472,25.408,102.176,66.08,120.16    c6.176,2.784,9.536,1.6,10.912-4.128c1.216-4.352,6.56-25.312,9.152-35.2c0.8-3.168,0.384-5.92-2.176-8.896    c-13.504-15.616-24.224-44.064-24.224-70.752c0-68.384,54.368-134.784,146.88-134.784c80,0,135.968,51.968,135.968,126.304    c0,84-44.448,142.112-102.208,142.112c-31.968,0-55.776-25.088-48.224-56.128c9.12-36.96,27.008-76.704,27.008-103.36    c0-23.904-13.504-43.68-41.088-43.68c-32.544,0-58.944,32.224-58.944,75.488c0,27.488,9.728,46.048,9.728,46.048    S144.676,371.2,138.692,395.488c-10.112,41.12,1.376,107.712,2.368,113.44c0.608,3.168,4.16,4.16,6.144,1.568    c3.168-4.16,42.08-59.68,52.992-99.808c3.968-14.624,20.256-73.92,20.256-73.92c10.72,19.36,41.664,35.584,74.624,35.584    c98.048,0,168.896-86.176,168.896-193.12C463.62,76.704,375.876,0,262.948,0z"></path>
-</g>
-</g></svg></span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div class="u-align-left u-container-style u-layout-cell u-size-30 u-white u-layout-cell-2" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">
-                <div class="u-container-layout u-container-layout-5">
-                  <h2 class="u-text u-text-9">Оформіть замовлення прямо зараз! <br><span style="font-weight: 400; font-size: 2.25rem;">Наші оператори зв'яжуться з вами на протязі 5 хвилин</span>
+                  <h2 class="u-text u-text-1"><span style="font-size: 2.25rem;">Оформіть замовлення прямо зараз! </span>
+                    <br><span style="font-weight: 400; font-size: 1.5rem;">Наші оператори зв'яжуться з вами на протязі 5 хвилин</span>
                   </h2>
-                  <div class="u-align-left u-expanded-width u-form u-form-1">
+                  <div class="custom-expanded u-align-left u-expanded-width-lg u-expanded-width-xl u-expanded-width-xxl u-form u-form-1">
                     <form action="https://service.nicepagesrv.com/form/v4/form-process" class="u-clearfix u-form-spacing-28 u-form-vertical u-inner-form" style="padding: 0px;" source="email" name="form">
                       <div class="u-form-group u-form-name u-label-top">
                         <label for="name-5a14" class="u-label">Ваше ім'я</label>
@@ -304,21 +464,71 @@ c6.177,6.18,9.262,14.271,9.262,22.366C354.708,234.018,351.617,242.115,345.441,24
                       </div>
                       <div class="u-form-group u-form-phone u-label-top u-form-group-3">
                         <label for="phone-5e95" class="u-label">Ваш номер телефону</label>
-                        <input type="tel" pattern="\+?\d{0,3}[\s\(\-]?([0-9]{2,3})[\s\)\-]?([\s\-]?)([0-9]{3})[\s\-]?([0-9]{2})[\s\-]?([0-9]{2})" placeholder="+380 ХХ ХХХХХХХ" id="phone-5e95" name="phone" class="u-border-grey-10 u-grey-5 u-input u-input-rectangle u-radius-5" required="">
+                        <input type="tel" placeholder="050 123 4567" id="phone-5e95" name="phone" class="u-border-grey-10 u-grey-5 u-input u-input-rectangle u-radius-5" required="" data-country-code="ua">
                       </div>
                       <div class="u-form-group u-form-message u-label-top">
-                        <label for="message-5a14" class="u-label">Напишіть примітки до заказу або бажаний товар </label>
-                        <textarea placeholder="​" rows="4" cols="50" id="message-5a14" name="message" class="u-border-grey-10 u-grey-5 u-input u-input-rectangle u-radius-5" required=""></textarea>
+                        <label for="message-5a14" class="u-label">Напишіть примітки до замовлення або бажаний товар </label>
+                        <textarea placeholder="​" rows="4" cols="50" id="message-5a14" name="message" class="u-border-grey-10 u-grey-5 u-input u-input-rectangle u-radius-5"></textarea>
                       </div>
-                      <div class="u-align-center u-form-group u-form-submit u-label-top">
-                        <a href="#" class="u-active-palette-5-dark-3 u-border-none u-btn u-btn-round u-btn-submit u-button-style u-hover-palette-5-dark-3 u-palette-3-base u-radius u-text-active-white u-text-body-alt-color u-text-hover-white u-btn-3">Замовлення підтверджую! </a>
+                      <div class="u-align-center-xl u-align-center-xxl u-align-left-lg u-align-right-md u-align-right-sm u-align-right-xs u-form-group u-form-submit u-label-top">
+                        <a href="#" class="u-active-palette-5-dark-3 u-border-none u-btn u-btn-round u-btn-submit u-button-style u-hover-palette-5-dark-3 u-palette-3-base u-radius u-text-active-white u-text-body-alt-color u-text-hover-white u-btn-1">Замовлення підтверджую! </a>
                         <input type="submit" value="submit" class="u-form-control-hidden">
                       </div>
                       <div class="u-form-send-message u-form-send-success">Спасибо! Ваше сообщение отправлено.</div>
                       <div class="u-form-send-error u-form-send-message">Отправка не удалась. Пожалуйста, исправьте ошибки и попробуйте еще раз.</div>
                       <input type="hidden" value="" name="recaptchaResponse">
                       <input type="hidden" name="formServices" value="8dae2aa9-97d0-7c92-be6f-36fe68bfcdea">
+                      <input type="hidden" name="siteKey" value="6LfCAAwsAAAAAKrUjvTvfF2L2rbX43AP2qnZ3hOs">
                     </form>
+                  </div>
+                </div>
+              </div>
+              <div class="u-align-left u-container-align-left-lg u-container-align-left-xl u-container-align-left-xxl u-container-style u-layout-cell u-palette-5-dark-3 u-shading u-size-30 u-layout-cell-2" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">
+                <div class="u-container-layout u-container-layout-2">
+                  <p class="u-text u-text-2"> Хочется мати нове хобі, яке відволікає від рутини, дарує ментальний спокій та гордість за готовий результат виробу? Або ж Ви шукаєте нові ідеї для подарунку дитині, підлітку чи дорослому?&nbsp;<br>Тоді ми знайшли один одного! &lt;3
+                  </p>
+                  <h2 class="u-text u-text-3">Зв'язок із нами</h2>
+                  <div class="custom-expanded u-expanded-width-lg u-expanded-width-md u-expanded-width-sm u-expanded-width-xl u-expanded-width-xxl u-list u-list-1">
+                    <div class="u-repeater u-repeater-1">
+                      <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle">
+                        <div class="u-container-layout u-similar-container u-container-layout-3"><span class="u-file-icon u-icon u-text-white u-icon-1"><img src="images/6.png" alt=""></span>
+                          <h5 class="u-text u-text-4">Напишіть нам! </h5>
+                          <p class="u-text u-text-grey-10 u-text-5"><span style="font-size: 1rem;">Наша дружня компанія завжди рада Вашим питанням та пропозиціям!</span>
+                            <br>
+                            <a href="#" class="u-active-none u-border-1 u-border-active-white u-border-hover-white u-border-no-left u-border-no-right u-border-no-top u-border-palette-3-base u-btn u-button-link u-button-style u-hover-none u-none u-text-active-white u-text-hover-white u-text-palette-3-base u-btn-2" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">papercrafta@gmail.com </a>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle">
+                        <div class="u-container-layout u-similar-container u-container-layout-4"><span class="u-file-icon u-icon u-text-white u-icon-2"><img src="images/8.png" alt=""></span>
+                          <h5 class="u-text u-text-6">Офіс</h5>
+                          <p class="u-text u-text-grey-10 u-text-7">Вулиця Хрещатик, 27,<br>Київ, Украина, 01001<br>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="u-container-style u-list-item u-repeater-item u-shape-rectangle">
+                        <div class="u-container-layout u-similar-container u-container-layout-5"><span class="u-file-icon u-icon u-text-white u-icon-3"><img src="images/10.png" alt=""></span>
+                          <h5 class="u-text u-text-8">Телефон</h5>
+                          <p class="u-text u-text-grey-10 u-text-9"> пн-пт з 9:00 до 18:00<br>
+                            <a href="#" class="u-active-none u-border-1 u-border-active-white u-border-hover-white u-border-no-left u-border-no-right u-border-no-top u-border-palette-3-base u-btn u-button-link u-button-style u-hover-none u-none u-text-active-white u-text-hover-white u-text-palette-3-base u-btn-3" data-animation-name="" data-animation-duration="0" data-animation-delay="0" data-animation-direction="">+380 93 1467834<br>
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="u-social-icons u-social-icons-1">
+                    <a class="u-social-url" title="Telegram" target="_blank" href="https://web.telegram.org/a/"><span class="u-file-icon u-icon u-social-facebook u-social-icon u-icon-4"><img src="images/11.png" alt=""></span>
+                    </a>
+                    <a class="u-social-url" title="instagram" target="_blank" href="https://instagram.com/name"><span class="u-icon u-social-icon u-social-instagram u-text-color-var u-icon-5"><svg class="u-svg-link" preserveAspectRatio="xMidYMin slice" viewBox="0 0 112 112" style=""><use xlink:href="#svg-ffd0"></use></svg><svg class="u-svg-content" viewBox="0 0 112 112" x="0" y="0" id="svg-ffd0"><path fill="currentColor" d="M55.9,32.9c-12.8,0-23.2,10.4-23.2,23.2s10.4,23.2,23.2,23.2s23.2-10.4,23.2-23.2S68.7,32.9,55.9,32.9z
+	 M55.9,69.4c-7.4,0-13.3-6-13.3-13.3c-0.1-7.4,6-13.3,13.3-13.3s13.3,6,13.3,13.3C69.3,63.5,63.3,69.4,55.9,69.4z"></path><path fill="#FFFFFF" d="M79.7,26.8c-3,0-5.4,2.5-5.4,5.4s2.5,5.4,5.4,5.4c3,0,5.4-2.5,5.4-5.4S82.7,26.8,79.7,26.8z"></path><path fill="currentColor" d="M78.2,11H33.5C21,11,10.8,21.3,10.8,33.7v44.7c0,12.6,10.2,22.8,22.7,22.8h44.7c12.6,0,22.7-10.2,22.7-22.7
+	V33.7C100.8,21.1,90.6,11,78.2,11z M91,78.4c0,7.1-5.8,12.8-12.8,12.8H33.5c-7.1,0-12.8-5.8-12.8-12.8V33.7
+	c0-7.1,5.8-12.8,12.8-12.8h44.7c7.1,0,12.8,5.8,12.8,12.8V78.4z"></path></svg></span>
+                    </a>
+                    <a class="u-social-url" target="_blank" data-type="Custom" title="Pinterest" href="https://www.pinterest.com/"><span class="u-icon u-social-custom u-social-icon u-text-color-var u-icon-6"><svg class="u-svg-link" preserveAspectRatio="xMidYMin slice" viewBox="0 0 511.977 511.977" style=""><use xlink:href="#svg-a654"></use></svg><svg class="u-svg-content" viewBox="0 0 511.977 511.977" x="0px" y="0px" id="svg-a654" style="enable-background:new 0 0 511.977 511.977;"><g><g><path d="M262.948,0C122.628,0,48.004,89.92,48.004,187.968c0,45.472,25.408,102.176,66.08,120.16    c6.176,2.784,9.536,1.6,10.912-4.128c1.216-4.352,6.56-25.312,9.152-35.2c0.8-3.168,0.384-5.92-2.176-8.896    c-13.504-15.616-24.224-44.064-24.224-70.752c0-68.384,54.368-134.784,146.88-134.784c80,0,135.968,51.968,135.968,126.304    c0,84-44.448,142.112-102.208,142.112c-31.968,0-55.776-25.088-48.224-56.128c9.12-36.96,27.008-76.704,27.008-103.36    c0-23.904-13.504-43.68-41.088-43.68c-32.544,0-58.944,32.224-58.944,75.488c0,27.488,9.728,46.048,9.728,46.048    S144.676,371.2,138.692,395.488c-10.112,41.12,1.376,107.712,2.368,113.44c0.608,3.168,4.16,4.16,6.144,1.568    c3.168-4.16,42.08-59.68,52.992-99.808c3.968-14.624,20.256-73.92,20.256-73.92c10.72,19.36,41.664,35.584,74.624,35.584    c98.048,0,168.896-86.176,168.896-193.12C463.62,76.704,375.876,0,262.948,0z"></path>
+</g>
+</g></svg></span>
+                    </a>
                   </div>
                 </div>
               </div>
